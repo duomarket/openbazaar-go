@@ -3,7 +3,7 @@ package ipfs
 import (
 	"bytes"
 	"encoding/hex"
-	"github.com/ipfs/go-libp2p-crypto"
+	"gx/ipfs/QmUWER4r4qMvaCnX5zREcfyiWN7cXN9g3a7fkRqNz8qWPP/go-libp2p-crypto"
 	"github.com/tyler-smith/go-bip39"
 	"testing"
 )
