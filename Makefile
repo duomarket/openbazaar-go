@@ -14,7 +14,7 @@ build_linux:
 ##
 ## docker
 ##
-DOCKER_PROFILE ?= openbazaar
+DOCKER_PROFILE ?= ob1company
 DOCKER_IMAGE_NAME ?= $(DOCKER_PROFILE)/openbazaard
 
 build_docker:
