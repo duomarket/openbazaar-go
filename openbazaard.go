@@ -701,6 +701,8 @@ func (x *Start) Execute(args []string) error {
 	}
 
 	log.Info("Peer ID: ", nd.Identity.Pretty())
+	pubbytes, _ := nd.PrivateKey.GetPublic().Bytes()
+	log.Info("PubKey: ", hex.EncodeToString(pubbytes))
 	printSwarmAddrs(nd)
 
 	// Get current directory root hash
