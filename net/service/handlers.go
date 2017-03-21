@@ -1227,6 +1227,8 @@ func (service *OpenBazaarService) handleChat(p peer.ID, pmes *pb.Message, option
 		Timestamp: t,
 	}
 	service.broadcast <- n
+	//reply
+	go service.echo(p, chat)
 	log.Debugf("Received CHAT message from %s", p.Pretty())
 	return nil, nil
 }
@@ -1320,3 +1322,46 @@ func (service *OpenBazaarService) handleModeratorRemove(pid peer.ID, pmes *pb.Me
 
 	return nil, nil
 }
+
+func (service *OpenBazaarService) echoChat(p peer.ID, chat *pb.Chat) {
+	err := service.sendChat(p, chat.Subject, "")
+	if err != nil {
+		log.Error("problem sending typing:", err)
+		return
+	}
+	time.Sleep(100 * time.Millisecond)
+	err = service.sendChat(p, chat.Subject, "ECHO: "+chat.Message)
+	if err != nil {
+		log.Error("problem sending reply:", err)
+		return
+	}
+}
+
+func (service *OpenBazaarService) sendChat(p peer.ID, subject, message string) error {
+	ts, err := ptypes.TimestampProto(time.Now())
+	if err != nil {
+		return err
+	}
+	id := sha256.Sum256([]byte(message + subject + ptypes.TimestampString(ts)))
+	encoded, err := mh.Encode(id[:], mh.SHA2_256)
+
+	msgId, err := mh.Cast(encoded)
+	if err != nil {
+		return err
+	}
+	var flag pb.Chat_Flag
+	if message == "" {
+		flag = pb.Chat_TYPING
+	} else {
+		flag = pb.Chat_MESSAGE
+	}
+	chatPb := &pb.Chat{
+		MessageId: msgId.B58String(),
+		Subject:   subject,
+		Message:   message,
+		Timestamp: ts,
+		Flag:      flag,
+	}
+	return service.node.SendChat(p.Pretty(), chatPb)
+}
+
