@@ -983,7 +983,13 @@ func (service *OpenBazaarService) handleChat(p peer.ID, pmes *pb.Message, option
 }
 
 func (service *OpenBazaarService) echoChat(p peer.ID, chat *pb.Chat) {
-	err := service.sendChat(p, chat.Subject, "")
+	err := service.sendRead(p, chat.MessageId, chat.Subject)
+	if err != nil {
+		log.Error("problem sending read:", err)
+		return
+	}
+	time.Sleep(50 * time.Millisecond)
+	err = service.sendChat(p, chat.Subject, "")
 	if err != nil {
 		log.Error("problem sending typing:", err)
 		return
@@ -994,6 +1000,15 @@ func (service *OpenBazaarService) echoChat(p peer.ID, chat *pb.Chat) {
 		log.Error("problem sending reply:", err)
 		return
 	}
+}
+
+func (service *OpenBazaarService) sendRead(p peer.ID, id, subject string) error {
+	chatPb := &pb.Chat{
+		MessageId: id,
+		Subject:   subject,
+		Flag:      pb.Chat_READ,
+	}
+	return service.node.SendChat(p.Pretty(), chatPb)
 }
 
 func (service *OpenBazaarService) sendChat(p peer.ID, subject, message string) error {
