@@ -976,9 +976,10 @@ func (service *OpenBazaarService) handleChat(p peer.ID, pmes *pb.Message, option
 		Timestamp: t,
 	}
 	service.broadcast <- n
-
-	// reply
-	go service.echoChat(p, chat)
+	if chat.Flag == pb.Chat_MESSAGE {
+		// reply
+		go service.echoChat(p, chat)
+	}
 	return nil, nil
 }
 
