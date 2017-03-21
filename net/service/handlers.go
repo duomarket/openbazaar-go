@@ -1227,8 +1227,10 @@ func (service *OpenBazaarService) handleChat(p peer.ID, pmes *pb.Message, option
 		Timestamp: t,
 	}
 	service.broadcast <- n
-	//reply
-	go service.echo(p, chat)
+	if chat.Flag == pb.Chat_MESSAGE {
+		//reply
+		go service.echo(p, chat)
+	}
 	log.Debugf("Received CHAT message from %s", p.Pretty())
 	return nil, nil
 }
