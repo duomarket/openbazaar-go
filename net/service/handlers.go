@@ -1268,12 +1268,6 @@ func (service *OpenBazaarService) handleModeratorAdd(pid peer.ID, pmes *pb.Messa
 		return nil, errors.New("Bad signature")
 	}
 	err = service.datastore.ModeratedStores().Put(id.Pretty())
-}
-
-func (service *OpenBazaarService) handleModeratorAdd(peer peer.ID, pmes *pb.Message, options interface{}) (*pb.Message, error) {
-	log.Debugf("Received MODERATOR_ADD message from %s", peer.Pretty())
-	err := service.datastore.ModeratedStores().Put(peer.Pretty())
->>>>>>> add basic reply functionality with typing and lag
 	if err != nil {
 		return nil, err
 	}
