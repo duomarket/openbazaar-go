@@ -1326,12 +1326,13 @@ func (service *OpenBazaarService) handleModeratorRemove(pid peer.ID, pmes *pb.Me
 }
 
 func (service *OpenBazaarService) echoChat(p peer.ID, chat *pb.Chat) {
+	time.Sleep(50 * time.Millisecond)
 	err := service.sendRead(p, chat.MessageId, chat.Subject)
 	if err != nil {
 		log.Error("problem sending read:", err)
 		return
 	}
-	time.Sleep(50 * time.Millisecond)
+	time.Sleep(10 * time.Millisecond)
 	err = service.sendChat(p, chat.Subject, "")
 	if err != nil {
 		log.Error("problem sending typing:", err)
