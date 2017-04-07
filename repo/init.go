@@ -44,7 +44,7 @@ func DoInit(repoRoot string, nBitsForKeypair int, testnet bool, password string,
 		}
 	}
 	var identityKey []byte
-	if ident, err := hex.DecodeString(mnemonic); err != nil {
+	if ident, err := hex.DecodeString(mnemonic); err == nil {
 		fmt.Printf("Using provided keypair...\n")
 		identityKey = ident
 		mnemonic, err = bip39.NewMnemonic(ident[:16])
