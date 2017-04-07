@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"os"
@@ -42,19 +43,27 @@ func DoInit(repoRoot string, nBitsForKeypair int, testnet bool, password string,
 			return err
 		}
 	}
-	seed := bip39.NewSeed(mnemonic, "Secret Passphrase")
-	fmt.Printf("Generating Ed25519 keypair...")
-	identityKey, err := ipfs.IdentityKeyFromSeed(seed, nBitsForKeypair)
-	if err != nil {
-		return err
+	var identityKey []byte
+	if ident, err := hex.DecodeString(mnemonic); err != nil {
+		fmt.Printf("Using provided keypair...\n")
+		identityKey = ident
+		mnemonic, err = bip39.NewMnemonic(ident[:16])
+		if err != nil {
+			return err
+		}
+	} else {
+		seed := bip39.NewSeed(mnemonic, "Secret Passphrase")
+		fmt.Printf("Generating Ed25519 keypair...")
+		identityKey, err = ipfs.IdentityKeyFromSeed(seed, nBitsForKeypair)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("Done\n")
 	}
-	fmt.Printf("Done\n")
-
 	identity, err := ipfs.IdentityFromKey(identityKey)
 	if err != nil {
 		return err
 	}
-
 	log.Infof("Initializing OpenBazaar node at %s\n", repoRoot)
 	if err := fsrepo.Init(repoRoot, conf); err != nil {
 		return err
