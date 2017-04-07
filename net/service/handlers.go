@@ -984,19 +984,19 @@ func (service *OpenBazaarService) handleChat(p peer.ID, pmes *pb.Message, option
 }
 
 func (service *OpenBazaarService) echoChat(p peer.ID, chat *pb.Chat) {
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(150 * time.Millisecond)
 	err := service.sendRead(p, chat.MessageId, chat.Subject)
 	if err != nil {
 		log.Error("problem sending read:", err)
 		return
 	}
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(50 * time.Millisecond)
 	err = service.sendChat(p, chat.Subject, "")
 	if err != nil {
 		log.Error("problem sending typing:", err)
 		return
 	}
-	time.Sleep(100 * time.Millisecond)
+	time.Sleep(800 * time.Millisecond)
 	err = service.sendChat(p, chat.Subject, "ECHO: "+chat.Message)
 	if err != nil {
 		log.Error("problem sending reply:", err)
